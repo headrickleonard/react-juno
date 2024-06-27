@@ -1,6 +1,6 @@
 {
   "name": "react-juno",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "bin": {
     "react-juno": "./index.js"
@@ -8,7 +8,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "Vite",
+    "Tailwind CSS",
+    "CLI",
+    "bootstrap",
+    "roject Setup",
+    "react-dom"
+  ],
   "author": "Headrick Leonard",
   "license": "ISC",
   "description": "A CLI tool for bootstrapping react projects with tailwind css",
