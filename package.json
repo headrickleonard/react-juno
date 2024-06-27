@@ -1,0 +1,20 @@
+{
+  "name": "react-juno",
+  "version": "1.0.1",
+  "main": "index.js",
+  "bin": {
+    "react-juno": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Headrick Leonard",
+  "license": "ISC",
+  "description": "A CLI tool for bootstrapping react projects with tailwind css",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "inquirer": "^9.3.1",
+    "shelljs": "^0.8.5"
+  }
+}
