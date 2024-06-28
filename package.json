@@ -1,12 +1,17 @@
 {
   "name": "react-juno",
-  "version": "1.0.3",
+  "version": "1.0.7",
   "main": "index.js",
+  "type": "module",
   "bin": {
     "react-juno": "./index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/headrickleonard/react-juno.git"
   },
   "keywords": [
     "react",
@@ -14,7 +19,7 @@
     "Tailwind CSS",
     "CLI",
     "bootstrap",
-    "roject Setup",
+    "project Setup",
     "react-dom"
   ],
   "author": "Headrick Leonard",

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const { program } = require('commander');
-const shell = require('shelljs');
-const fs = require('fs');
-const path = require('path');
-const ora = require('ora');
-const chalk = require('chalk');
+import { program } from 'commander';
+import shell from 'shelljs';
+import fs from 'fs';
+import path from 'path';
+import ora from 'ora';
+import chalk from 'chalk';
 
 program
   .version('1.0.0')
@@ -15,7 +15,7 @@ program
   .command('init <projectName>')
   .description('Initialize a new React project with Vite and Tailwind CSS')
   .action(async (projectName) => {
-    const inquirer = await import('inquirer');
+    const inquirer = (await import('inquirer')).default;
 
     const questions = [
       {
@@ -56,10 +56,30 @@ program
       }
     ];
 
-    const answers = await inquirer.default.prompt(questions);
+    const answers = await inquirer.prompt(questions);
     const spinner = ora();
 
     try {
+      
+      if (answers.template !== 'standard') {
+        console.log(chalk.yellow('Notice: The selected template is not currently working. Please use the standard setup.'));
+        const confirmation = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'useStandard',
+            message: 'Would you like to proceed with the standard template?',
+            default: true,
+          }
+        ]);
+
+        if (!confirmation.useStandard) {
+          console.log(chalk.red('Setup aborted. Please try again with the standard template.'));
+          return;
+        }
+
+        answers.template = 'standard';
+      }
+
       spinner.start('Creating Vite project');
       shell.exec(`npm create vite@latest ${projectName} -- --template react`, { silent: true });
       shell.cd(projectName);
@@ -74,6 +94,8 @@ program
       spinner.start('Creating directory structure');
       createDirectoryStructure();
       spinner.succeed('Directory structure created');
+
+     
 
       if (answers.template !== 'standard') {
         spinner.start(`Copying ${answers.template} template files`);
@@ -180,6 +202,8 @@ function setupTesting() {
   shell.mkdir('-p', testsDir);
   fs.writeFileSync(path.join(testsDir, 'App.test.js'), testContent);
 }
+
+
 
 const reduxStoreContent = `
 import { createStore, combineReducers } from 'redux';

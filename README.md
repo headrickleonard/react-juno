@@ -60,3 +60,51 @@ my-new-project/
 ├── package-lock.json
 └── README.md
 ```
+
+
+## Contributing
+
+We welcome contributions to the `react-juno cli` If you would like to contribute, please follow these steps:
+
+### 1. Fork the Repository:
+Click the "Fork" button at the top right corner of this repository to create a copy of the repository in your GitHub account.
+
+### 2. Clone Your Fork:
+ Clone your forked repository to your local machine.
+
+``` bash
+git clone https://github.com/headrickleonard/react-juno.git
+
+```
+
+```bash
+cd react-juno
+
+```
+
+### 3. Create a Branch:
+ Create a new branch for your feature or bugfix.
+
+ ```
+ git checkout -b feature/your-feature-name
+
+```
+### 4. Make Changes:
+ Make your changes in the new branch.
+
+### 5. Commit Your Changes:
+  Commit your changes with a descriptive commit message.
+
+  ```bash
+  git commit -m "Add new feature: your-feature-name"
+
+```
+### 6. Push Your Changes:
+ Push your changes to your forked repository.
+
+ ```bash
+ git push origin feature/your-feature-name
+
+```
+### 7. Create a Pull Request:
+ Open a pull request to the main repository, explaining your changes and the feature or bugfix you have implemented.
