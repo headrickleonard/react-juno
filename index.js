@@ -4,96 +4,129 @@ const { program } = require('commander');
 const shell = require('shelljs');
 const fs = require('fs');
 const path = require('path');
+const ora = require('ora');
+const chalk = require('chalk');
 
 program
-    .version('1.0.0')
-    .description('React Project Bootstrap CLI');
+  .version('1.0.0')
+  .description('React Project Bootstrap CLI');
 
 program
-    .command('init <projectName>')
-    .description('Initialize a new React project with Vite and Tailwind CSS')
-    .action(async (projectName) => {
-        const inquirer = await import('inquirer');
+  .command('init <projectName>')
+  .description('Initialize a new React project with Vite and Tailwind CSS')
+  .action(async (projectName) => {
+    const inquirer = await import('inquirer');
 
-        const questions = [
-            {
-                type: 'confirm',
-                name: 'redux',
-                message: 'Do you want to include Redux for state management?',
-                default: true,
-            },
-            {
-                type: 'confirm',
-                name: 'router',
-                message: 'Do you want to include React Router for routing?',
-                default: true,
-            },
-            {
-                type: 'confirm',
-                name: 'eslint',
-                message: 'Do you want to include ESLint for code linting?',
-                default: true,
-            },
-            {
-                type: 'confirm',
-                name: 'prettier',
-                message: 'Do you want to include Prettier for code formatting?',
-                default: true,
-            },
-            {
-                type: 'confirm',
-                name: 'testing',
-                message: 'Do you want to include Jest and React Testing Library for testing?',
-                default: true,
-            }
-        ];
+    const questions = [
+      {
+        type: 'list',
+        name: 'template',
+        message: 'Select a project template',
+        choices: ['standard', 'e-commerce', 'blog', 'portfolio'],
+      },
+      {
+        type: 'confirm',
+        name: 'redux',
+        message: 'Do you want to include Redux for state management?',
+        default: true,
+      },
+      {
+        type: 'confirm',
+        name: 'router',
+        message: 'Do you want to include React Router for routing?',
+        default: true,
+      },
+      {
+        type: 'confirm',
+        name: 'eslint',
+        message: 'Do you want to include ESLint for code linting?',
+        default: true,
+      },
+      {
+        type: 'confirm',
+        name: 'prettier',
+        message: 'Do you want to include Prettier for code formatting?',
+        default: true,
+      },
+      {
+        type: 'confirm',
+        name: 'testing',
+        message: 'Do you want to include Jest and React Testing Library for testing?',
+        default: true,
+      }
+    ];
 
-        inquirer.default.prompt(questions).then((answers) => {
-            // Run Vite create-react-app
-            shell.exec(`npm create vite@latest ${projectName} -- --template react`);
-            shell.cd(projectName);
+    const answers = await inquirer.default.prompt(questions);
+    const spinner = ora();
 
-            // Install Tailwind CSS
-            shell.exec('npm install -D tailwindcss postcss autoprefixer');
-            shell.exec('npx tailwindcss init -p');
-            setupTailwindCSS();
+    try {
+      spinner.start('Creating Vite project');
+      shell.exec(`npm create vite@latest ${projectName} -- --template react`, { silent: true });
+      shell.cd(projectName);
+      spinner.succeed('Vite project created');
 
-            // Create directory structure
-            createDirectoryStructure();
+      spinner.start('Installing Tailwind CSS');
+      shell.exec('npm install -D tailwindcss postcss autoprefixer', { silent: true });
+      shell.exec('npx tailwindcss init -p', { silent: true });
+      setupTailwindCSS();
+      spinner.succeed('Tailwind CSS installed');
 
-            if (answers.redux) {
-                shell.exec('npm install redux react-redux');
-                setupRedux();
-            }
+      spinner.start('Creating directory structure');
+      createDirectoryStructure();
+      spinner.succeed('Directory structure created');
 
-            if (answers.router) {
-                shell.exec('npm install react-router-dom');
-                setupRouter();
-            }
+      if (answers.template !== 'standard') {
+        spinner.start(`Copying ${answers.template} template files`);
+        copyTemplateFiles(answers.template);
+        spinner.succeed(`${answers.template} template files copied`);
+      }
 
-            if (answers.eslint) {
-                shell.exec('npm install -D eslint');
-                setupEslint();
-            }
+      if (answers.redux) {
+        spinner.start('Installing Redux');
+        shell.exec('npm install redux react-redux', { silent: true });
+        setupRedux();
+        spinner.succeed('Redux installed');
+      }
 
-            if (answers.prettier) {
-                shell.exec('npm install -D prettier');
-                setupPrettier();
-            }
+      if (answers.router) {
+        spinner.start('Installing React Router');
+        shell.exec('npm install react-router-dom', { silent: true });
+        setupRouter();
+        spinner.succeed('React Router installed');
+      }
 
-            if (answers.testing) {
-                shell.exec('npm install -D jest @testing-library/react @testing-library/jest-dom');
-                setupTesting();
-            }
+      if (answers.eslint) {
+        spinner.start('Setting up ESLint');
+        shell.exec('npm install -D eslint', { silent: true });
+        setupEslint();
+        spinner.succeed('ESLint setup complete');
+      }
 
-            console.log('Project setup complete!');
-        });
-    });
+      if (answers.prettier) {
+        spinner.start('Setting up Prettier');
+        shell.exec('npm install -D prettier', { silent: true });
+        setupPrettier();
+        spinner.succeed('Prettier setup complete');
+      }
+
+      if (answers.testing) {
+        spinner.start('Setting up testing');
+        shell.exec('npm install -D jest @testing-library/react @testing-library/jest-dom', { silent: true });
+        setupTesting();
+        spinner.succeed('Testing setup complete');
+      }
+
+      console.log(chalk.green('Project setup complete!'));
+    } catch (error) {
+      spinner.fail(chalk.red('An error occurred during project setup'));
+      console.error(error);
+    }
+  });
 
 program.parse(process.argv);
 
 function setupTailwindCSS() {
-    const tailwindConfigContent = `
+  const tailwindConfigContent = `
 module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
@@ -102,45 +135,50 @@ module.exports = {
   plugins: [],
 }
   `;
-    fs.writeFileSync('tailwind.config.js', tailwindConfigContent);
+  fs.writeFileSync('tailwind.config.js', tailwindConfigContent);
 
-    const tailwindCSSContent = `
+  const tailwindCSSContent = `
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
   `;
-    fs.writeFileSync('src/index.css', tailwindCSSContent);
+  fs.writeFileSync('src/index.css', tailwindCSSContent);
 }
 
 function createDirectoryStructure() {
-    const directories = ['src/components', 'src/pages', 'src/contexts', 'src/utils', 'src/redux', 'src/routes', 'src/styles'];
-    directories.forEach(dir => {
-        shell.mkdir('-p', dir);
-    });
+  const directories = ['src/components', 'src/pages', 'src/contexts', 'src/utils', 'src/redux', 'src/routes', 'src/styles'];
+  directories.forEach(dir => {
+    shell.mkdir('-p', dir);
+  });
+}
+
+function copyTemplateFiles(template) {
+  const templateDir = path.join(__dirname, 'templates', template);
+  shell.cp('-R', `${templateDir}/*`, process.cwd());
 }
 
 function setupRedux() {
-    const reduxDir = path.join(process.cwd(), 'src', 'redux');
-    fs.writeFileSync(path.join(reduxDir, 'store.js'), reduxStoreContent);
+  const reduxDir = path.join(process.cwd(), 'src', 'redux');
+  fs.writeFileSync(path.join(reduxDir, 'store.js'), reduxStoreContent);
 }
 
 function setupRouter() {
-    const routesDir = path.join(process.cwd(), 'src', 'routes');
-    fs.writeFileSync(path.join(routesDir, 'AppRouter.js'), routerContent);
+  const routesDir = path.join(process.cwd(), 'src', 'routes');
+  fs.writeFileSync(path.join(routesDir, 'AppRouter.js'), routerContent);
 }
 
 function setupEslint() {
-    fs.writeFileSync('.eslintrc.js', eslintConfigContent);
+  fs.writeFileSync('.eslintrc.js', eslintConfigContent);
 }
 
 function setupPrettier() {
-    fs.writeFileSync('.prettierrc', prettierConfigContent);
+  fs.writeFileSync('.prettierrc', prettierConfigContent);
 }
 
 function setupTesting() {
-    const testsDir = path.join(process.cwd(), 'src', '__tests__');
-    shell.mkdir('-p', testsDir);
-    fs.writeFileSync(path.join(testsDir, 'App.test.js'), testContent);
+  const testsDir = path.join(process.cwd(), 'src', '__tests__');
+  shell.mkdir('-p', testsDir);
+  fs.writeFileSync(path.join(testsDir, 'App.test.js'), testContent);
 }
 
 const reduxStoreContent = `

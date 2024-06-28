@@ -25,10 +25,11 @@ To install the CLI globally, run:
 npm install -g react-juno
 
 ```
-and then
+## Usage
+After you have installed the react-juno cli globally ,run this command to create a project
 
 ```bash
-npm install react-juno
+react-juno init <projectName>
 
 ```
 ### After the initialization the project structure will look like this

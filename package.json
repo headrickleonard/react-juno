@@ -1,6 +1,6 @@
 {
   "name": "react-juno",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "index.js",
   "bin": {
     "react-juno": "./index.js"
@@ -21,8 +21,10 @@
   "license": "ISC",
   "description": "A CLI tool for bootstrapping react projects with tailwind css",
   "dependencies": {
+    "chalk": "^5.3.0",
     "commander": "^12.1.0",
     "inquirer": "^9.3.1",
+    "ora": "^8.0.1",
     "shelljs": "^0.8.5"
   }
 }
